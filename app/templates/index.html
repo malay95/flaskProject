@@ -2,7 +2,8 @@
 
 {% block content %}
     <h1>Hi, {{ current_user.username }}!</h1>
-    {% for post in posts %}
-    <div><p>{{ post.author.username }} says: <b>{{ post.post }}</b></p></div>
+    <p> <a href={{ token }} target="_blank"> {{ token }}</a></p>
+    {% for s in stats %}
+    <div><p>logged_in: <b>{{ s.login_timestamp }}</b> and logged_out: <b> {{ s.logout_timestamp }}</b></p></div>
     {% endfor %}
 {% endblock %}

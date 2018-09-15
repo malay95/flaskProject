@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class=login>
     <h1>Sign In</h1>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
@@ -9,14 +10,22 @@
             {{ form.username(size=32) }}
         </p>
         <p>
-        	{{ form.email.label }}<br>
-        	{{ form.email(size=32)}}
-        </p>
-        <p>
             {{ form.password.label }}<br>
             {{ form.password(size=32) }}
         </p>
-        <p>{{ form.submit() }}</p>
+        <p >{{ form.submit() }}</p><br>
         <p>New User? <a href="{{ url_for('register') }}">Click to Register!</a></p>
     </form>
+</div>
 {% endblock %}
+
+
+<!-- <div class="login">
+    <h1>Login</h1>
+    <form method="post" nonvalidate>
+        <input type="text" name="u" required="required" />
+        <input type="password" name="p" required="required" />
+        <button type="submit" class="btn btn-primary btn-block btn-large">Let me in.</button>
+    </form>
+</div>
+ -->

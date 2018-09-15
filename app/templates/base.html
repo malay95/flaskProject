@@ -1,21 +1,36 @@
 <html>
     <head>
+      <script type="text/javascript" scr="{{url_for('static', filename='js/Chart.min.js')}}"></script>
       {% if title %}
       <title>{{ title }}Adaptive Web-Assignment</title>
       {% else %}
       <title>Assignment 1</title>
       {% endif %}
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul class=flashes>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
       <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/main.css') }}">
     </head>
     <body>
         <div class="menu">
-          <h2>Assignment 1</h2> 
-          <a href="/index" class="nav-buttons">Home</a>
-          {% if current_user.is_anonymous %}
-          <a href="{{ url_for('login') }}" class="nav-buttons">Login</a>
-          {% else %}
-          <a href="{{ url_for('logout') }}" class="nav-buttons">Logout</a>
-          {% endif %}
+          <h2>Assignment 1</h2>
+          <table>
+            <tr>
+              <td><a class="menu_a" href="/index">Home</a></td>
+              {% if current_user.is_anonymous %}
+                <td><a class="menu_a" href="{{ url_for('login') }}" class="nav-buttons">Login</a></td>
+              {% else %}
+                <td><a class="menu_a" href="{{ url_for('logout') }}" class="nav-buttons">Logout</a></td>
+              {% endif %}
+            </tr>
+          </table> 
         </div>
         <hr>
         <div class="container">

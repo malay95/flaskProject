@@ -1,19 +1,44 @@
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      color: #444;
+@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
+    .login { 
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin: -150px 0 0 -150px;
+        width:300px;
+        height:300px;
+      }
+      .login h1 { color: #377ba8; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:center; }
+
+   body
+    { font-family: sans-serif; 
+      background: #eee; 
     }
-    a.nav-buttons {
-      border: 2px solid black;
-      border-radius: 2px;
-      padding: 1.5%;
-      color: #fff;
-      background-color: blue;
+    a, h1, h2
+    { color: #377ba8; }
+    h1, h2
+    { font-family: 'Georgia',
+     serif; margin: 0; }
+    h1  { border-bottom: 2px solid #eee; }
+    h2  { font-size: 4em; }
+
+    .menu_a {
+    background-color: white;
+    color: black;
+    border: 2px solid #377ba8;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-left: 20px;
     }
-    /*
-     * Formatting the header area
-     */
+
+    .menu_a:hover {
+      color: white;
+    background-color: #377ba8;
+    }
+
     header {
       background-color: #DFB887;
       height: 35px;
@@ -39,7 +64,7 @@
       width: 1200px;
       margin: 0 auto;
     }
-    div.home {
+    /*div.home {
       padding: 10px 0 30px 0;
       background-color: #E6E6FA;
       -webkit-border-radius: 6px;
@@ -66,18 +91,4 @@
       text-align: center;
       letter-spacing: -1px;
       color: #999;
-    }
-    .menu {
-       top:0;
-       width: 100%;
-    }
-    .menu li {
-      display: inline;
-    }
-    .menu li + li {
-      margin-left: 35px;
-    }
-    .menu li a {
-      color: #444;
-      text-decoration: none;
-    }
+    }*/
