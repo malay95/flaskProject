@@ -1,6 +1,9 @@
 <html>
     <head>
       <script type="text/javascript" scr="{{url_for('static', filename='js/Chart.min.js')}}"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
       {% if title %}
       <title>{{ title }}Adaptive Web-Assignment</title>
       {% else %}
@@ -19,8 +22,10 @@
       <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/main.css') }}">
     </head>
     <body>
+      <div class="parent">
         <div class="menu">
-          <h2>Assignment 1</h2>
+           <h2>Assignment 1</h2>
+          </div>
           <table>
             <tr>
               <td><a class="menu_a" href="/index">Home</a></td>
@@ -31,7 +36,8 @@
               {% endif %}
             </tr>
           </table> 
-        </div>
+        
+      </div>
         <hr>
         <div class="container">
           {% block content %}{% endblock %}

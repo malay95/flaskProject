@@ -10,10 +10,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import base64
 import io
-import seaborn as sns
+import pandas as pd
+from bokeh.charts import Histogram, Bar
+from bokeh.embed import components
 
-sns.set()
 token = 0
+data = pd.DataFrame()
 
 
 
@@ -25,8 +27,41 @@ def index():
 		return redirect(url_for('login'))
 	stats = Stats.query.filter_by(user_id = current_user.get_id()).order_by(Stats.login_timestamp.desc()).limit(5).all()
 	url = "https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15&token=" + current_user.get_id()
-	return render_template('index.html', title="Home Page", stats =stats, user=current_user.get_id(), token=url)
+	data = save_data()	
+	data['count/time'] = data['count/time'].apply(int)
+	user_data = data[data['username'] == current_user.username]
+	other_data = data[data['username'] != current_user.username]
+	other_data['username'] = 'other'
+	final_data = pd.concat([user_data,other_data])
+	print(len(final_data),len(other_data))
+	user_data = user_data.drop(['username'],axis=1)
+	user_data['count/time'] = user_data['count/time'].apply(int)
+	user_data = user_data.groupby(['eventName']).mean().reset_index()
+	final_data = final_data.drop(['timestamp'],axis=1)
+	final_data = final_data.groupby(['eventName','username']).mean().reset_index()
+	final_data = final_data.rename(index=str, columns={'count/time':'parameter'})
+	print(final_data.to_dict('records'))
+	return render_template('index.html', title="Home Page", stats =stats, user=current_user.get_id(), token=url, final_list = user_data, all_data=final_data.to_dict('records'))
 
+@app.route('/index?data=<eventName>')
+def index_chart(eventName):
+	print('here')
+	data = save_data()	
+	user_data = data[data['username'] == current_user.username]
+	
+	user_data = user_data.drop(['username'],axis=1)
+	user_data['count/time'] = user_data['count/time'].apply(int)
+	user_data = user_data.groupby(['eventName']).mean().reset_index()
+	eventName = request.args.get('data')
+	event_data = data[data['eventName']==eventName]
+	mean_val = event_data['count/time'].mean()
+	y1 = user_data[user_data['eventName']==eventName]['count/time'].iloc[0]
+	l = {'username':['others', current_user.username ], eventName:[mean_val, user_data[user_data['eventName']==eventName]['count/time'].iloc[0]]}
+	l = pd.DataFrame.from_dict(l)
+	print(l)
+	plot = create_figure(l,eventName)
+	script,div = components(plot)
+	return render_template('user_chart.html', script_plot = script, div_plot=div)
 
 @app.route('/')
 @app.route('/login', methods=['GET','POST'])
@@ -98,7 +133,7 @@ def api():
 		print(data)
 		token = data.get('token')
 	elif data.get('event') == 'time event':
-		log = UserActivity(eventName= data.get('event'), parameter=data.get('time'), user_id = token)
+		log = UserActivity(eventName= data.get('event'), parameter=data.get('time'), user_id = token, timestamp=datetime.now())
 		db.session.add(log)
 		db.session.commit()
 		flash('log added')
@@ -108,8 +143,9 @@ def api():
 		if log is not None:
 			print(log)
 			log.parameter +=1
+			log.timestamp = datetime.now()
 		else:
-			log = UserActivity(eventName=data.get('event'), parameter = 1, user_id= token)
+			log = UserActivity(eventName=data.get('event'), parameter = 1, user_id= token, timestamp=datetime.now())
 			db.session.add(log)
 		db.session.commit()
 	print('token-{}'.format(token))
@@ -144,6 +180,7 @@ def matplot():
 	user_ids = [x.id for x in res]
 	print(user_ids)
 	events = ['scroll_down event', 'scroll_up event','star click event']
+	y = [3,4,5]
 	bars = []
 	for e in events:
 		bar = []
@@ -152,24 +189,53 @@ def matplot():
 			bar.append(0 if res is None else res.parameter)
 		bars.append(bar)
 	print(bars)
-	graph_1_url = build_graph(bars, users, events)
+	graph_1_url = build_graph(events,y)
 	return render_template('graphs.html', graphs = graph_1_url)
 
-def build_graph(bars, user_ids, events):
-	img = io.BytesIO()
-	width = 0.40
-	for i in range(len(bars)):
-		x = [ i+r *(width*len(events)) for r in range(len(user_ids))]
-		print(x)
-		plt.bar(x, bars[i], width=width, edgecolor='white',label=events[i])
-
+def build_graph(x,y):
 	# plt.bar(x1,bars1, color='#7f6d5f', width=0.25, edgecolor='white', label='var1')
 	# plt.bar(x2,bars2, color='#557f2f', width=0.25, edgecolor='white', label='var2')
+	plt.bar(x,y,align='center')
+	plt.xticks(x)
+	plt.ylabel('Count')
+	plt.savefig('./assets/img.png', format='png')
 
-	plt.xticks([r + width for r in range(len(bars[0]))], user_ids)
-	plt.legend()
-	plt.savefig(img, format='png')
-	img.seek(0)
-	graph_url = base64.b64encode(img.getvalue()).decode()
-	plt.close()
-	return 'data:image/png;base64,{}'.format(graph_url)
+
+def save_data():
+	users = User.query.all()
+	for user in users:
+		user_activities =  user.activity.all()
+		for activity in user_activities:
+			row = {}
+			row['username'] = user
+			row['eventName'] = activity.eventName
+			row['count/time'] = activity.parameter
+			row['timestamp'] = activity.timestamp
+			final_list.append(row)
+	df = pd.DataFrame(final_list)
+	df = df[df['count/time'] != ""]
+	df.to_csv('data.csv')
+	return df
+
+@app.route('/bo_graph')
+def bo_graph():
+	data = save_data()
+	data_bo = data[data['eventName'] != "time event"]
+	data_bo['count/time'] = data_bo['count/time'].apply(int)
+	pv = pd.pivot_table(data=data_bo, index='username', values='count/time', columns = 'eventName')
+	pv['username'] = pv.index
+	current_event = request.args.get('event_name')
+	if current_event == None:
+		current_event = "scroll_up event"
+
+	plot = create_figure(pv, current_event)
+	script, div = components(plot)
+	return render_template('bokeh.html', script=script, div=div, event_names = pv.columns[:-1], current_event = current_event)
+	# return render_template('result.html', final_list=pv)
+
+def create_figure(data, current_feature_name):
+	p = Bar(data, values=current_feature_name, title=current_feature_name, color = 'username', legend='top_right', width=600, height=400)
+
+	# Set the y axis label
+	p.yaxis.axis_label = current_feature_name
+	return p
