@@ -2,9 +2,9 @@
 
 {% block content %}
 	<div class="row">
-	<div class="col-sm-6">
+	<div class="col-sm-6" style="float: left;">
     <h1>Hi, {{ current_user.username }}!</h1>
-    <p> <a href={{ token }} target="_blank"> {{ token }}</a></p>
+    <p> <a href={{ token }} target="_blank" class='link_index'> Stackoveflow link</a></p>
     <div>
     	<h1>Login and Logout timestamps</h1>
     <table>
@@ -22,7 +22,7 @@
     </div>
 
     <div>
-    <h1>Logs in the stackoverflow website timestamps</h1>
+    <h1>Logs in the stackoverflow website</h1>
     <table >
     <tr>
         {% for val in final_list.columns %}
@@ -36,6 +36,7 @@
     </tr>
     {% endfor %}
     </table>
+    <p>click on any row to see its visualization</p>
     </div>
     <script type="text/javascript">
     	var data = {{ all_data  | tojson | safe }};
@@ -58,7 +59,7 @@
 				  }
 				];
 
-			Plotly.newPlot('chart', bar_data);
+			Plotly.newPlot('chart', bar_data, layout={title:eventName});
     	}
     </script>
 	</div>

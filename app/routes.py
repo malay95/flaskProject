@@ -33,35 +33,24 @@ def index():
 	other_data = data[data['username'] != current_user.username]
 	other_data['username'] = 'other'
 	final_data = pd.concat([user_data,other_data])
-	print(len(final_data),len(other_data))
 	user_data = user_data.drop(['username'],axis=1)
 	user_data['count/time'] = user_data['count/time'].apply(int)
 	user_data = user_data.groupby(['eventName']).mean().reset_index()
 	final_data = final_data.drop(['timestamp'],axis=1)
 	final_data = final_data.groupby(['eventName','username']).mean().reset_index()
 	final_data = final_data.rename(index=str, columns={'count/time':'parameter'})
-	print(final_data.to_dict('records'))
+	# print(final_data.to_dict('records'))
 	return render_template('index.html', title="Home Page", stats =stats, user=current_user.get_id(), token=url, final_list = user_data, all_data=final_data.to_dict('records'))
 
-@app.route('/index?data=<eventName>')
-def index_chart(eventName):
-	print('here')
-	data = save_data()	
-	user_data = data[data['username'] == current_user.username]
-	
-	user_data = user_data.drop(['username'],axis=1)
-	user_data['count/time'] = user_data['count/time'].apply(int)
-	user_data = user_data.groupby(['eventName']).mean().reset_index()
-	eventName = request.args.get('data')
-	event_data = data[data['eventName']==eventName]
-	mean_val = event_data['count/time'].mean()
-	y1 = user_data[user_data['eventName']==eventName]['count/time'].iloc[0]
-	l = {'username':['others', current_user.username ], eventName:[mean_val, user_data[user_data['eventName']==eventName]['count/time'].iloc[0]]}
-	l = pd.DataFrame.from_dict(l)
-	print(l)
-	plot = create_figure(l,eventName)
-	script,div = components(plot)
-	return render_template('user_chart.html', script_plot = script, div_plot=div)
+@app.route('/readme')
+def readme():
+	return render_template('readme.html')
+
+@app.route('/database_snap')
+def database_snap():
+	data = save_data()
+	user_data = data[data['username']== current_user.username]
+	return render_template('result.html', final_list=user_data)
 
 @app.route('/')
 @app.route('/login', methods=['GET','POST'])
@@ -203,11 +192,12 @@ def build_graph(x,y):
 
 def save_data():
 	users = User.query.all()
+	final_list=[]
 	for user in users:
 		user_activities =  user.activity.all()
 		for activity in user_activities:
 			row = {}
-			row['username'] = user
+			row['username'] = user.username
 			row['eventName'] = activity.eventName
 			row['count/time'] = activity.parameter
 			row['timestamp'] = activity.timestamp
@@ -235,7 +225,6 @@ def bo_graph():
 
 def create_figure(data, current_feature_name):
 	p = Bar(data, values=current_feature_name, title=current_feature_name, color = 'username', legend='top_right', width=600, height=400)
-
 	# Set the y axis label
 	p.yaxis.axis_label = current_feature_name
 	return p

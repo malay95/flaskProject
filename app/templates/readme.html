@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="width: 100%">
+<h1> Assignment 1: Social visualization with behavior logging.</h1>
+<h3>What kind of events are logged and why?</h3>
+<ol>
+
+ 	<li> Search event: This event logs the number of times the user has searched a question using the search box. The user mostly search for the question when he cannot find the answer in the present post he is looking or a new question. The user only uses this event when he knows exactly what type of answer he is expecting which will tell us how knowledgable the user is. </li>
+
+	<li> Vote click event: This is the vote up or vote down i.e. when the user click this button regardless of the reputation. Only very active users will use this feature. We can know how much a user is active with this log. </li>
+
+	<li> star click event: This is the star click event similar to the vote up and down. This button saves the answer for future references. This will also be used by more active but less knowledgable users. The star event will show how much the user is active in this field (java)</li>
+
+	<li> scroll_up and scroll_down events: These are scroll up and down events. These events are just for the users interaction level with the page. If the user is very much active, the scroll events would be high and the user would have gone through more content. This event is just for getting idea about the users knowledge. If the users scrolls less then he gets his answer in the first post and doesnot go further.</li>
+
+	<li> time event: This is the total time taken in milliseconds by the user in a post division. This event would be used to know the amount of time spent by the user and compare it with other users. We can know which user takes more time to understand the solution who takes less time. This event can also be used to compare the answers readability. </li>
+</ol>
+
+<h3> Analysis and findings </h3>
+<ul>
+	<li>Some patterns that I found during the exercise:
+		<ul>
+			<li> Some events such as scroll event is more than click event in general</li>
+			<li> The events which are less are more significant and also helps generate a user model</li>
+			<li> If the average time taken in a single post by a user is more than the average of all users, then the number of stars clicked are more than the average as he liked the answer and would be refering it later.</li>
+		</ul>
+	</li>
+	<li> From the visualizations and data, some facts are as follow:
+		<ul> 
+			<li> The number of the upvotes and stars events would always be less in a period of time. eg 2 or 3 for a regular user</li>
+			<li> The search event is very rare as there is google search and so the search event will not be very significant</li>
+		</ul>
+	</li>
+	<li> While collecting the data, there are chances of noises which makes the visualization very difficult. For example, time event with time less than 10ms are not needed in generating a model. So removal of such events is neccessary. Only the cleaned data is used for the visualization. </li>
+
+
+	<li> Other findings are stated in the user profile page of every user. The contents include what each visulization are and they signify. </li>
+</ul>
+
+<h3>System and Technologies used</h3>
+<p>
+	I have used flask and its libraries to make a web app that visualizes a users activity in the stackoverflow page whose link is given on the user profile page. I have used flask-login to manage sessions, flask-migrate to manage database(sqlite3), flask-cors for same origin poilicy, werkzeug for security purposes. The database is persistant and can be called from the web app. I also use sqlalchemy to connect flask and db. Using the migrate library of the flask, it is easy to change the schema and also save previous states of the schema so that the data is not lost. Using sqlite3 makes it very easy to export and move the db to any system. </p>
+<p>
+	For collecting the data in the stackoverflow page, I created a chrome extention which logs the data and sends the data to my web app and my app handles it as an api and saves it in the database. I log the above mentioned events from the stackoverflow site. In my link I append a token and that token is then sent back to the server as part of the api call which is then checked for authorization. This way is more secure and also persistant. </p>
+</div>
+{% endblock %}
