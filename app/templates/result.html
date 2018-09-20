@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Result Table!</h1>
+    <div>
+    <table>
+    <tr>
+        {% for val in final_list.columns %}
+        <th> {{ val }} </th>
+        {% endfor%}
+        <th> links </th>
+    {% for index,s in final_list.iterrows() %}
+    <tr>
+        {% for col in final_list.columns %}
+    	<td>{{ s[col] }}</td>
+        {% endfor %}    
+    </tr>
+    {% endfor %}
+    </table>
+    </div>
+
+
+    
+{% endblock %}

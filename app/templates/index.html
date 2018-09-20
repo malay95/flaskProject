@@ -1,9 +1,68 @@
 {% extends "base.html" %}
 
 {% block content %}
+	<div class="row">
+	<div class="col-sm-6">
     <h1>Hi, {{ current_user.username }}!</h1>
     <p> <a href={{ token }} target="_blank"> {{ token }}</a></p>
+    <div>
+    	<h1>Login and Logout timestamps</h1>
+    <table>
+    <tr>
+    	<th> Login Time </th>
+    	<th> Logout Time </th>
+    </tr>
     {% for s in stats %}
-    <div><p>logged_in: <b>{{ s.login_timestamp }}</b> and logged_out: <b> {{ s.logout_timestamp }}</b></p></div>
+    <tr>
+    	<td>{{ s.login_timestamp }}</td>
+    	<td>{{ s.logout_timestamp}}</td>
+    </tr>
     {% endfor %}
+    </table>
+    </div>
+
+    <div>
+    <h1>Logs in the stackoverflow website timestamps</h1>
+    <table >
+    <tr>
+        {% for val in final_list.columns %}
+        <th> {{ val }} </th>
+        {% endfor%}
+    {% for index,s in final_list.iterrows() %}
+    <tr onclick="create_graph('{{ s.eventName }}')" class="clickable">
+        {% for col in final_list.columns %}
+    	<td>{{ s[col] }}</td>
+        {% endfor %}    
+    </tr>
+    {% endfor %}
+    </table>
+    </div>
+    <script type="text/javascript">
+    	var data = {{ all_data  | tojson | safe }};
+    	console.log(data);
+    	function create_graph(eventName){
+    		var x_val = [];
+    		var y_val= [];
+    		for(i=0; i<data.length; i++){
+    			if(data[i].eventName == eventName){
+    				x_val.push(data[i].username);
+    				y_val.push(data[i].parameter);
+    			}
+    		}
+
+	    	var bar_data = [
+	  				{
+				    x: x_val,
+				    y: y_val,
+				    type: 'bar'
+				  }
+				];
+
+			Plotly.newPlot('chart', bar_data);
+    	}
+    </script>
+	</div>
+    <div class="col-sm-6">
+    	<div id='chart'></div>
+    </div>
 {% endblock %}

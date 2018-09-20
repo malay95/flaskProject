@@ -1,5 +1,29 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans);
 
+.clickable:hover{
+  background-color:#377ba8;
+  color:white;
+}
+.parent {
+  position: relative;
+}
+
+.menu{
+  width: 450px;
+  margin: 0 auto;
+  text-align: center;
+}
+th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #377ba8;
+    color: white;
+}
+td,th {
+  border: 1px solid #ddd;
+    padding: 8px;
+}
     .login { 
         position: absolute;
         top: 50%;

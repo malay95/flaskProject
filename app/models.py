@@ -33,6 +33,7 @@ class UserActivity(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	eventName = db.Column(db.String(32))
 	parameter = db.Column(db.Integer)
+	timestamp = db.Column(db.DateTime)
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 	def __repr__(self):
